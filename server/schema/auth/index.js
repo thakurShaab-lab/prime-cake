@@ -24,8 +24,6 @@ const wl_customers = mysqlTable('wl_customers', {
 
   title: varchar('title', { length: 10 }),
 
-  farm_name: varchar('farm_name', { length: 455 }),
-
   first_name: varchar('first_name', { length: 32 }),
 
   last_name: varchar('last_name', { length: 32 }),
@@ -97,30 +95,8 @@ const wl_customers = mysqlTable('wl_customers', {
 
   location: varchar('location', { length: 255 }),
 
-  farm_document: varchar('farm_document', { length: 255 }),
-
   zipcode: varchar('zipcode', { length: 255 }),
 
-  country_id: int('country_id'),
-
-  state_id: int('state_id'),
-
-  city_id: int('city_id'),
-
-  location_id: int('location_id'),
-
-  country_code: varchar('country_code', { length: 155 }),
-
-  mob_std_code: varchar('mob_std_code', { length: 155 }),
-
-  register_type: int('register_type')
-    .default(0),
-
-  register_type_val: varchar('register_type_val', { length: 55 }),
-
-  app_id: varchar('app_id', { length: 128 }),
-  device_id: varchar('device_id', { length: 128 }),
-  app_type: varchar('app_type', { length: 128 }),
 })
 
 module.exports = { wl_customers }

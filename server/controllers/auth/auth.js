@@ -7,24 +7,20 @@ const xss = require('xss')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const authModel = require('../../model/auth/auth')
-const locationModel = require('../../model/location/location')
-
-body('app_id').notEmpty()
-body('device_id').notEmpty()
-body('app_type').notEmpty()
+const countryModel = require('../../model/country/country')
 
 
 const registerValidation = [
 
-    body('farm_name')
+    body('first_name')
         .trim()
-        .notEmpty().withMessage('Farm name is required')
-        .isLength({ min: 2, max: 255 }).withMessage('Farm name must be between 2–255 characters'),
+        .notEmpty().withMessage('First name is required')
+        .isLength({ min: 2, max: 255 }).withMessage('First name must be between 2–255 characters'),
 
-    body('contact_person')
+    body('last_name')
         .trim()
-        .notEmpty().withMessage('Contact person is required')
-        .isLength({ min: 2, max: 80 }).withMessage('Contact person must be between 2–80 characters'),
+        .notEmpty().withMessage('Last name is required')
+        .isLength({ min: 2, max: 255 }).withMessage('Last name must be between 2–255 characters'),
 
     body('email')
         .trim()
@@ -37,33 +33,17 @@ const registerValidation = [
         .notEmpty().withMessage('Mobile number is required')
         .isMobilePhone('any').withMessage('Invalid mobile number'),
 
-    body('app_id')
-        .trim()
-        .notEmpty().withMessage('App ID is required')
-        .isLength({ min: 2, max: 180 }).withMessage('App ID must be a valid string'),
-
-    body('device_id')
-        .trim()
-        .notEmpty().withMessage('Device ID is required')
-        .isLength({ min: 2, max: 180 }).withMessage('Device ID must be a valid string'),
-
-    body('app_type')
-        .trim()
-        .notEmpty().withMessage('App type is required')
-        .isLength({ min: 2, max: 180 }).withMessage('App type must be a valid string'),
-
-    body('location_id')
-        .notEmpty().withMessage('Location is required')
-        .isInt().withMessage('Location ID must be numeric'),
-
-    body('address')
-        .optional()
-        .trim()
-        .isLength({ max: 255 }).withMessage('Address too long'),
+    body('country_id')
+        .notEmpty().withMessage('Country is required')
+        .isInt().withMessage('Country must be numeric'),
 
     body('password')
         .notEmpty().withMessage('Password is required')
-        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+        .matches(/[A-Z]/).withMessage('Password must contain at least 1 uppercase letter')
+        .matches(/[a-z]/).withMessage('Password must contain at least 1 lowercase letter')
+        .matches(/[0-9]/).withMessage('Password must contain at least 1 number')
+        .matches(/[@$!%*?&]/).withMessage('Password must contain at least 1 special character'),
 
     body('confirm_password')
         .notEmpty().withMessage('Confirm password is required')
@@ -73,14 +53,14 @@ const registerValidation = [
             }
             return true
         }),
-    body('agree')
-        .notEmpty().withMessage('Agreement is required')
-        .custom(value => {
-            if (value !== 'true' && value !== true) {
-                throw new Error('You must accept terms and conditions')
-            }
-            return true
-        })
+    // body('agree')
+    //     .notEmpty().withMessage('Agreement is required')
+    //     .custom(value => {
+    //         if (value !== 'true' && value !== true) {
+    //             throw new Error('You must accept terms and conditions')
+    //         }
+    //         return true
+    //     })
 ]
 
 const loginValidation = [
@@ -106,108 +86,93 @@ const deleteFile = (filePath) => {
 const authController = {
 
     register: async (req, res) => {
-        let uploadedFilePath = null
-
         try {
-            if (req.file && req.file.path) {
-                uploadedFilePath = req.file.path
-            }
+            const {
+                first_name,
+                last_name,
+                email,
+                mobile_number,
+                password,
+                confirm_password,
+                address,
+                city,
+                state,
+                country_id,
+                zipcode
+            } = req.body
 
-            const { farm_name, contact_person, email, mobile_number, location_id, address, password, confirm_password, app_id, device_id, app_type } = req.body
-
-            if (!email || !validator.isEmail(email)) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
+            if (!validator.isEmail(email)) {
+                return res.status(200).json({
                     success: false,
-                    message: "Invalid email format"
-                })
-            }
-
-            if (!password || password.length < 6) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
-                    success: false,
-                    message: "Password must be at least 6 characters"
-                })
-            }
-
-            if (password !== confirm_password) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
-                    success: false,
-                    message: "Password and confirm password do not match"
+                    message: "Invalid email"
                 })
             }
 
             const emailExists = await authModel.findByUsername(email)
             if (emailExists) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
+                return res.status(200).json({
                     success: false,
-                    message: "Email already registered"
+                    message: "Email already exists"
                 })
             }
 
             const mobileExists = await authModel.findByMobile(mobile_number)
             if (mobileExists) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
+                return res.status(200).json({
                     success: false,
-                    message: "Mobile number already registered"
+                    message: "Mobile already exists"
                 })
             }
 
-            const location = await locationModel.getById(Number(location_id))
-            if (!location) {
-                deleteFile(uploadedFilePath)
-                return res.status(201).json({
+            const countryData = await countryModel.getById(Number(country_id))
+
+            if (!countryData) {
+                return res.status(200).json({
                     success: false,
-                    message: "Invalid location"
+                    message: "Invalid country selected"
                 })
             }
 
-            const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+            if(password !== confirm_password){
+                return res.status(200).json({
+                    success: false,
+                    message: "Password and Confirm Password Doest not match."
+                })
+            }
 
-            console.log({
-                app_id,
-                app_type,
-                device_id
-            })
+            const cleanPassword = xss(password)
 
+            const hashedPassword = await bcrypt.hash(cleanPassword, SALT_ROUNDS)
 
             const data = {
                 user_name: email,
                 password: hashedPassword,
                 old_password: hashedPassword,
-                farm_name,
-                first_name: contact_person,
+                first_name,
+                last_name,
                 mobile_number,
-                location: location.location_name,
-                location_id: location.location_id,
                 address,
-                customer_photo: req.file ? req.file.filename : null,
+                city,
+                state,
+                country: countryData.country_name,
+                zipcode,
                 status: '1',
                 is_verified: '0',
                 login_type: 'normal',
                 ip_address: req.ip,
                 account_created_date: new Date(),
-                app_id: app_id,
-                app_type: app_type,
-                device_id: device_id
+                actkey: ''
             }
 
             await authModel.create(data)
 
             return res.status(201).json({
                 success: true,
-                message: 'Registration successful',
-                email: email
+                message: 'Registration successful'
             })
 
         } catch (err) {
-            deleteFile(uploadedFilePath)
-
-            return res.status(201).json({
+            return res.status(500).json({
                 success: false,
                 message: err.message || 'Registration failed'
             })
@@ -218,25 +183,30 @@ const authController = {
         try {
             const { email, password } = req.body
 
-            const safeEmail = xss(email)
+            const safeLogin = xss(email)
 
-            if (!email || !validator.isEmail(email)) {
-                return res.status(201).json({
+            let user = await authModel.findByUsername(safeLogin)
+
+            if (!user) {
+                user = await authModel.findByMobile(safeLogin)
+            }
+
+            if (!user) {
+                return res.status(200).json({
                     success: false,
-                    message: "Invalid email format"
+                    message: 'Invalid credentials'
                 })
             }
 
-            const user = await authModel.findByUsername(safeEmail)
-            if (!user) {
-                return res.status(201).json({
+            if (user.status !== '1') {
+                return res.status(200).json({
                     success: false,
-                    message: 'Invalid email or password'
+                    message: 'Account inactive'
                 })
             }
 
             if (user.is_blocked === '1') {
-                return res.status(201).json({
+                return res.status(200).json({
                     success: false,
                     message: 'Account is blocked'
                 })
@@ -244,48 +214,39 @@ const authController = {
 
             const match = await bcrypt.compare(password, user.password)
             if (!match) {
-                return res.status(201).json({
+                return res.status(200).json({
                     success: false,
-                    message: 'Invalid password'
+                    message: 'Invalid credentials'
                 })
             }
-
-            const ACCESS_SECRET = process.env.ACCESS_SECRET
-            const ACCESS_EXPIRES_IN = process.env.ACCESS_EXPIRES_IN || '2d'
-
-            const REFRESH_SECRET = process.env.REFRESH_SECRET
-            const REFRESH_EXPIRES_IN = process.env.REFRESH_EXPIRES_IN || '10d'
 
             const accessToken = jwt.sign(
                 {
                     id: user.customers_id,
-                    email: user.user_name,
-                    type: user.user_type
+                    email: user.user_name
                 },
-                ACCESS_SECRET,
-                { expiresIn: ACCESS_EXPIRES_IN }
+                process.env.ACCESS_SECRET,
+                { expiresIn: process.env.ACCESS_EXPIRES_IN || '2d' }
             )
 
             const refreshToken = jwt.sign(
                 {
                     id: user.customers_id,
-                    appId: user.app_id,
-                    deviceId: user.device_id,
                     type: 'refresh'
                 },
-                REFRESH_SECRET,
-                { expiresIn: REFRESH_EXPIRES_IN || '10d' }
+                process.env.REFRESH_SECRET,
+                { expiresIn: process.env.REFRESH_EXPIRES_IN || '10d' }
             )
 
-            return res.status(201).json({
+            return res.status(200).json({
                 success: true,
                 message: 'Login successful',
-                accessToken: accessToken,
-                refreshToken: refreshToken
+                accessToken,
+                refreshToken
             })
 
         } catch (err) {
-            return res.status(201).json({
+            return res.status(500).json({
                 success: false,
                 message: 'Login failed'
             })
