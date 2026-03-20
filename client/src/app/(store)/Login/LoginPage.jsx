@@ -116,7 +116,6 @@ export default function LoginPage() {
                             >
                                 {loading ? "Logging in..." : "Log In"}
                             </button>
-
                         </div>
                         <div className="text-sm mt-4 text-center">
                             Don't have an account?{" "}
