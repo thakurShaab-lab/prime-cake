@@ -2,6 +2,8 @@ import "./globals.css"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { NotificationProvider } from "@/context/NotificationContext"
+import { AuthProvider } from "@/context/AuthContext"
+import { CartProvider } from "@/context/CartContext"
 
 export const metadata = {
   title: "Buy Cake Tools Online | Prime Cake Tools",
@@ -14,9 +16,13 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <NotificationProvider>
-          <Header />
-          {children}
-          <Footer />
+          <AuthProvider>
+            <CartProvider>
+              <Header />
+              {children}
+              <Footer />
+            </CartProvider>
+          </AuthProvider>
         </NotificationProvider>
       </body>
     </html>

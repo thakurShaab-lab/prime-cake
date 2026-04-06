@@ -1,22 +1,20 @@
 import Services from "@/components/Services"
 import Banner from "@/components/Banner"
 import Categories from "@/components/Categories"
-import NewArrivals from "@/components/NewArrivals"
 import Welcome from "@/components/Welcome"
-import HotProducts from "@/components/HotProducts"
-import FeaturedProducts from "@/components/FeaturedProducts"
 import CollectSection from "@/components/CollectSection"
 import Testimonials from "@/components/TestimonialsSection"
+import SectionProducts from "@/components/SectionProduct"
 
 export default function Home() {
   return (
     <div className="">
       <Banner />
       <Categories />
-      <NewArrivals />
+      <SectionProducts title='NEW ARRIVALS' section='featured' />
       <Welcome />
-      <HotProducts />
-      <FeaturedProducts />
+      <SectionProducts title='HOT PRODUCTS' section='hot'/>
+      <SectionProducts title='FEATURED PRODUCTS' section='hot' bg="/featured_bg.jpg" />
       <CollectSection />
       <Testimonials />
       <Services />

@@ -1,13 +1,10 @@
-const express = require('express')
-const productsController = require('../../controllers/product/product')
-const { authMiddleware } = require('../../middleware/authMiddleware')
-
+const express = require("express")
 const router = express.Router()
 
-router.get('/list/by-status', authMiddleware, productsController.listByStatus)
-router.put('/update-status', authMiddleware, productsController.updateStatus)
-router.put('/update-product', authMiddleware, productsController.updateProduct)
-router.get('/status-counts', authMiddleware, productsController.getStatusCounts)
-router.get('/order/invoice', authMiddleware, productsController.generateInvoice)
+const { ProductController } = require("../../controllers/product/product")
+
+router.get("/products", ProductController.getAll);
+router.get("/products/:id", ProductController.getById);
+router.get("/getFiltered", ProductController.getBySection)
 
 module.exports = router

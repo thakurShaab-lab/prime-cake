@@ -94,12 +94,9 @@ const authController = {
                 mobile_number,
                 password,
                 confirm_password,
-                address,
-                city,
-                state,
                 country_id,
-                zipcode
-            } = req.body
+                gender
+              } = req.body
 
             if (!validator.isEmail(email)) {
                 return res.status(200).json({
@@ -151,11 +148,8 @@ const authController = {
                 first_name,
                 last_name,
                 mobile_number,
-                address,
-                city,
-                state,
+                gender: gender || "Male",
                 country: countryData.country_name,
-                zipcode,
                 status: '1',
                 is_verified: '0',
                 login_type: 'normal',
@@ -194,7 +188,7 @@ const authController = {
             if (!user) {
                 return res.status(200).json({
                     success: false,
-                    message: 'Invalid credentials'
+                    message: 'Invalid email'
                 })
             }
 
@@ -216,7 +210,7 @@ const authController = {
             if (!match) {
                 return res.status(200).json({
                     success: false,
-                    message: 'Invalid credentials'
+                    message: 'Invalid password'
                 })
             }
 

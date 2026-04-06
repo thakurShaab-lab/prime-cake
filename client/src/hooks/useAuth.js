@@ -1,49 +1,46 @@
 import { useState } from "react"
 import { registerUser, loginUser } from "@/services/authService"
 import { useNotification } from "@/context/NotificationContext"
+import { useAuthContext } from "@/context/AuthContext"
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
   const { addNotification } = useNotification()
+  const { login } = useAuthContext()
 
   const register = async (formData) => {
     try {
       setLoading(true)
-
       const res = await registerUser(formData)
 
       addNotification("Registration successful 🎉", "success")
-
       return res
-
     } catch (err) {
-      addNotification(err.message || "Registration failed", "error")
+      addNotification(err.message, "error")
       throw err
     } finally {
       setLoading(false)
     }
   }
 
-  const login = async (data) => {
+  const loginUserHandler = async (formData) => {
     try {
       setLoading(true)
 
-      const res = await loginUser(data)
+      const res = await loginUser(formData)
 
-      localStorage.setItem("accessToken", res.accessToken)
-      localStorage.setItem("refreshToken", res.refreshToken)
+      login(res)
 
       addNotification("Login successful 🎉", "success")
 
       return res
-
     } catch (err) {
-      addNotification(err.message || "Login failed", "error")
+      addNotification(err.message, "error")
       throw err
     } finally {
       setLoading(false)
     }
   }
 
-  return { register, login, loading }
+  return { register, loginUserHandler, loading }
 }

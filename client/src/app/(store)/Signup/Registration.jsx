@@ -57,6 +57,18 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
   
+    if (
+      !form.first_name ||
+      !form.last_name ||
+      !form.email ||
+      !form.mobile_number ||
+      !form.password ||
+      !form.confirm_password
+    ) {
+      addNotification("Please fill all required fields", "error")
+      return
+    }
+  
     if (form.password !== form.confirm_password) {
       addNotification("Passwords do not match", "error")
       return
@@ -70,12 +82,9 @@ export default function RegisterPage() {
     try {
       await register(form)
   
-      setTimeout(() => {
-        router.replace("/Login") 
-      }, 1500)
-  
+      router.replace("/Login")
     } catch (err) {
-      console.error(err)
+      addNotification(err.message, "error")
     }
   }
 

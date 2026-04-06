@@ -1,7 +1,14 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { useAuthContext } from "@/context/AuthContext"
+import { useCart } from "@/context/CartContext"
 
 export default function Header() {
+    const { isLoggedIn, logout } = useAuthContext()
+    const { cartCount } = useCart()
+
     return (
         <header className="w-full shadow-sm sticky top-0 z-50 bg-white">
 
@@ -45,15 +52,36 @@ export default function Header() {
                         </p>
                     </div>
                     <div className="flex items-center justify-end gap-2 mt-2">
-                        <div className="flex border border-[#e0d5bf] rounded-full px-2 py-1 items-center">
-                            <Image src="/user-icon.svg" width={34} height={34} alt="" />
-                            <div className="text-[0.8em] leading-[1.3em] ml-1 whitespace-nowrap">
-                                <b className="block opacity-80">My Account</b>
-                                <a className="text-[#b89f6d] text-[1.1em]">Sign In</a>
-                                <span className="px-1 text-[#dadada]">|</span>
-                                <a className="text-[#b89f6d] text-[1.1em]">Sign Up</a>
+                        {!isLoggedIn ? (
+                            <div className="flex border border-[#e0d5bf] rounded-full px-2 py-1 items-center">
+                                <Image src="/user-icon.svg" width={34} height={34} alt="" />
+                                <div className="text-[0.8em] leading-[1.3em] ml-1 whitespace-nowrap">
+                                    <b className="block opacity-80">My Account</b>
+                                    <Link href='/Login' className="text-[#b89f6d] text-[1.1em] cursor-pointer">
+                                        Sign In
+                                    </Link>
+                                    <span className="px-1 text-[#dadada]">|</span>
+                                    <Link href='/Signup' className="text-[#b89f6d] text-[1.1em] cursor-pointer">
+                                        Sign Up
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex border border-[#e0d5bf] rounded-full px-3 py-1 items-center gap-2">
+                                <Image src="/user-icon.svg" width={34} height={34} alt="" />
+
+                                <div className="text-[0.8em] leading-[1.3em] whitespace-nowrap">
+                                    <b className="block opacity-80">My Account</b>
+
+                                    <button
+                                        onClick={logout}
+                                        className="text-[#b89f6d] text-[1.1em] hover:underline"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         <div className="relative px-2 pt-2">
                             <span className="absolute left-5.25 top-0 bg-[#a68849] text-white text-[0.75em] w-4.5 h-4.5 flex items-center justify-center rounded">
                                 10
@@ -62,7 +90,7 @@ export default function Header() {
                         </div>
                         <div className="relative px-2 pt-2">
                             <span className="absolute left-4.75 top-0 bg-[#a68849] text-white text-[0.75em] w-4.5 h-4.5 flex items-center justify-center rounded">
-                                10
+                                {cartCount}
                             </span>
                             <Link href='/Cart'>
                                 <Image src="/cart-icon.svg" width={28} height={28} alt="" />

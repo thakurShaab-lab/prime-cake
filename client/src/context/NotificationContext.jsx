@@ -23,8 +23,6 @@ export const NotificationProvider = ({ children }) => {
   return (
     <NotificationContext.Provider value={{ addNotification }}>
       {children}
-
-      {/* Render notifications */}
       <div className="fixed top-5 right-5 z-50 space-y-2">
         {notifications.map((n) => (
           <div
