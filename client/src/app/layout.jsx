@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer"
 import { NotificationProvider } from "@/context/NotificationContext"
 import { AuthProvider } from "@/context/AuthContext"
 import { CartProvider } from "@/context/CartContext"
+import AuthErrorModal from "@/components/AuthErrorModal"
 
 export const metadata = {
   title: "Buy Cake Tools Online | Prime Cake Tools",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         <NotificationProvider>
           <AuthProvider>
             <CartProvider>
+              <AuthErrorModal />
               <Header />
               {children}
               <Footer />

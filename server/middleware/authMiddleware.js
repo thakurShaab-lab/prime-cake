@@ -17,10 +17,9 @@ const authMiddleware = async (req, res, next) => {
             token = req.cookies.token
         }
 
-        if (!token) {
-            req.user = null
-            return next()
-        }
+        if (!token) return next()
+
+            console.log("TOKEN:", token)
 
         const decoded = jwt.verify(token, JWT_SECRET)
 

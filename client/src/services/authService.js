@@ -26,21 +26,3 @@ export const loginUser = async (data) => {
 
   return result
 }
-
-export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("refreshToken")
-
-  if (!refreshToken) throw new Error("No refresh token")
-
-  const res = await api.post("auth/refresh", { refreshToken })
-
-  const data = res.data
-
-  if (!data.success) {
-    throw new Error("Session expired")
-  }
-
-  localStorage.setItem("accessToken", data.accessToken)
-
-  return data.accessToken
-}

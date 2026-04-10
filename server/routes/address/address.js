@@ -11,6 +11,7 @@ router.delete("/delete/:id", authMiddleware, AddressController.delete)
 router.get("/default", authMiddleware, AddressController.getDefault)
 
 router.get("/temp", authMiddleware, AddressController.getTemp)
-router.post("/temp", AddressController.addOrUpdateTemp)
+router.post("/temp", authMiddleware, AddressController.addOrUpdateTemp)
+router.post("/select-address", authMiddleware, AddressController.selectAddressForOrder)
 
 module.exports = router

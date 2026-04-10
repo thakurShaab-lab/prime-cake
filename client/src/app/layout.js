@@ -1,4 +1,5 @@
 import { NotificationProvider } from "@/context/NotificationContext"
+import AuthErrorModal from "@/components/AuthErrorModal"
 
 export default function RootLayout({ children }) {
   return (
@@ -7,6 +8,7 @@ export default function RootLayout({ children }) {
         <NotificationProvider>
           {children}
         </NotificationProvider>
+        <AuthErrorModal />
       </body>
     </html>
   )

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { jwtDecode } from "jwt-decode"
-import { refreshAccessToken } from "@/services/authService"
 
 const AuthContext = createContext()
 
@@ -31,7 +30,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
 
     document.cookie = "accessToken=; path=/; max-age=0"
 
@@ -49,15 +47,8 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (isTokenExpired(token)) {
-        try {
-          token = await refreshAccessToken()
-
-          // update cookie too
-          document.cookie = `accessToken=${token}; path=/`
-        } catch {
           logout()
           return
-        }
       }
 
       const decodedUser = decodeToken(token)

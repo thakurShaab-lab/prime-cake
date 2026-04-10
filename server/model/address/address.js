@@ -59,7 +59,14 @@ const AddressModel = {
         return await db
             .delete(temp_addresses)
             .where(eq(temp_addresses.user_id, user_id))
-    }
+    },
+
+    async getById(address_id) {
+        return await db
+            .select()
+            .from(addresses)
+            .where(eq(addresses.address_id, address_id))
+    },
 }
 
 module.exports = { AddressModel }

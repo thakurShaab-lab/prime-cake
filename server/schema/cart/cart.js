@@ -49,10 +49,6 @@ const wl_cart = mysqlTable('wl_cart', {
 
     user_id: int('user_id'),
 
-    app_id: varchar('app_id', { length: 255 }),
-
-    app_type: varchar('app_type', { length: 10 }),
-
     add_date: date('add_date')
         .notNull()
         .default('0000-00-00'),

@@ -29,3 +29,8 @@ export const deleteAddressAPI = async (id) => {
   const res = await API.delete(`/address/delete/${id}`)
   return res.data
 }
+
+export const selectAddressAPI = async (address_id) => {
+  const res = await API.post("/address/select-address", { address_id })
+  return res.data
+}

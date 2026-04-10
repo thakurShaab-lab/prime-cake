@@ -20,6 +20,7 @@ const productRoutes = require('./routes/product/product')
 const cartRoutes = require("./routes/cart/cart")
 const shippingRoutes = require("./routes/shipping/shipping")
 const addressRoutes = require("./routes/address/address")
+const orderRoutes = require("./routes/order/order")
 
 require('./config/db')
 const { pool } = require('./config/db')
@@ -74,6 +75,7 @@ app.use('/api/product', productRoutes)
 app.use("/api/cart", cartRoutes)
 app.use("/api/shipping", shippingRoutes)
 app.use("/api/address", addressRoutes)
+app.use("/api/order", orderRoutes)
 
 
 app.use(errorMiddleware)

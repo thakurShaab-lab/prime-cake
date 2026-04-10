@@ -1,6 +1,6 @@
 const { db } = require('../../config/db')
 const { eq } = require('drizzle-orm')
-const { wl_cities } = require('../../schema/location/city')
+const { wl_cities } = require('../../schema/city/cities')
 
 const cityModel = {
 
